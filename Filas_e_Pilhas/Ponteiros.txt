@@ -1,0 +1,9 @@
+Ponteiros
+
+quando utilizar "*" "*ptr" : o apontado por, significa que o conteúdo do endereço da variável que ptr aponta.
+
+Quanto utilizo apenas "ptr" : Vejo o endereço da variável. 
+
+Quando utilizo "&ptr" : Vejo o endereço do ponteiro "ptr"
+
+Se eu usar "*ptr" e passar pra ele um valor, mudo o conteudo dentro da variável que o ponteiro está apontando.
