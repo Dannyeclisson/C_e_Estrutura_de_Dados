@@ -9,6 +9,7 @@ Este repositório reúne funções, implementações e listas de exercícios rea
 - Pilhas e Filas
 - Manipulação de ponteiros e alocação dinâmica
 - Exercícios resolvidos
+- Grafos
 
 ## Objetivo
 
