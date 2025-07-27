@@ -17,39 +17,101 @@ typedef struct {
 Usuario rede[MAX_USUARIOS];
 int totalUsuarios = 0;
 
-// Função para adicionar um usuário à rede
-int adicionarUsuario(char* nome) {
-    // Verifica se o limite maximo de usuarios (definifido no inicio do código) foi atingido
-    if (totalUsuarios >= MAX_USUARIOS) {
-        printf("Erro: Limite maximo de usuarios atingido!\n");
-        return -1;
+// Função para inicializar a rede social
+void inicializarRede() {
+    printf("========================================\n");
+    printf("Esse trabalho de ED foi feito por Dannyeclisson - 211061592 e Dylgerfesson - 221029356\n");
+    printf("REPRESENTACAO DE GRAFO NAO-DIRECIONADO\n");
+    printf("- Vertices: Jogadores (Usuario)\n");
+    printf("- Arestas: Amizades (conexoes bidirecionais)\n");
+    printf("- Implementacao: Lista de Adjacencia\n");
+
+    printf("========================================\n");
+    printf("    INICIALIZANDO REDE SOCIAL SHOW DE BOLA\n");
+    printf("========================================\n");
+    printf("Sistema iniciado com sucesso!\n");
+    printf("Capacidade maxima: %d 'craques'\n", MAX_USUARIOS);
+    printf("========================================\n\n");
+    
+    // Garantir que todas as estruturas estejam zeradas
+    totalUsuarios = 0;
+    for (int i = 0; i < MAX_USUARIOS; i++) {
+        rede[i].amigos = NULL;
+        strcpy(rede[i].nome, "");
+    }
+}
+
+// Função para liberar toda a memória alocada
+void liberarMemoria() {
+    printf("\n=== LIBERANDO MEMORIA ===\n");
+    int nosLiberados = 0;
+    
+    for (int i = 0; i < totalUsuarios; i++) {
+        No* atual = rede[i].amigos;
+        
+        while (atual != NULL) {
+            No* temp = atual;
+            atual = atual->prox;
+            free(temp);
+            nosLiberados++;
+        }
+        
+        rede[i].amigos = NULL;
     }
     
-    // Verifica se o usuário existe se existir retorna um erro
+    printf("Memoria liberada com sucesso!\n");
+    printf("Total de nos de amizade liberados: %d\n", nosLiberados);
+}
+
+// Função para encerrar o sistema
+void encerrarRede() {
+    printf("\n========================================\n");
+    printf("         ENCERRANDO SISTEMA\n");
+    printf("========================================\n");
+    
+    // Liberar toda a memória alocada
+    liberarMemoria();
+    
+    // Estatísticas finais
+    printf("Rede Social show de bola encerrada\n");
+    printf("Total de 'Craques' cadastrados: %d\n", totalUsuarios);
+    printf("Obrigado por usar a Rede Social Show de Bola!\n");
+    printf("========================================\n");
+}
+
+// Função para adicionar um usuário à rede
+int adicionarUsuario(char* nome) {
+    // Verifica se o limite maximo de 'craques' (definifido no inicio do código) foi atingido
+    if (totalUsuarios >= MAX_USUARIOS) {
+        printf("Erro: Limite maximo de 'craques' atingido!\n");
+        return -1;
+    }
+
+    // Verifica se o 'craque' existe se existir retorna um erro
     for (int i = 0; i < totalUsuarios; i++) {
         if (strcmp(rede[i].nome, nome) == 0) {
-            printf("Erro: Usuario '%s' ja existe!\n", nome);
+            printf("Erro: 'Craque' '%s' ja existe!\n", nome);
             return -1;
         }
     }
-    
-    // Adicionar o novo usuário
+
+    // Adicionar o novo 'craque'
     strcpy(rede[totalUsuarios].nome, nome);
-    rede[totalUsuarios].amigos = NULL;  // Inicialmente o usuario não tem amigos
-    
-    printf("Usuario '%s' adicionado com ID %d\n", nome, totalUsuarios);
-    
+    rede[totalUsuarios].amigos = NULL;  // Inicialmente o 'craque' não tem amigos
+
+    printf("Craque '%s' adicionado com ID %d\n", nome, totalUsuarios);
+
     return totalUsuarios++;  // Retorna o ID e incrementa o contador
 }
 
-// Função para buscar um usuário pelo nome (retorna o ID)
+// Função para buscar um 'craque' pelo nome (retorna o ID)
 int buscarUsuario(char* nome) {
     for (int i = 0; i < totalUsuarios; i++) {
         if (strcmp(rede[i].nome, nome) == 0) {
-            return i;  // Retorna o ID do usuário
+            return i;  // Retorna o ID do 'craque'
         }
     }
-    return -1;  // Usuário não encontrado
+    return -1;  // 'Craque' não encontrado
 }
 
 // Função para criar um novo nó (representa uma amizade)
@@ -164,7 +226,7 @@ void exibirRedeSocial() {
     }
     
     printf("\n========================================\n");
-    printf("         REDE SOCIAL COMPLETA\n");
+    printf("         REDE SOCIAL Show de Bola\n");
     printf("========================================\n");
     
     for (int i = 0; i < totalUsuarios; i++) {
@@ -207,18 +269,65 @@ int contarAmizades() {
     return totalAmizades / 2;
 }
 
+// Função para encontrar amigos em comum entre dois usuários
+void amigosEmComum(char* nome1, char* nome2) {
+    int id1 = buscarUsuario(nome1);
+    int id2 = buscarUsuario(nome2);
+
+    // Verificar se os 'craques' existem
+    if (id1 == -1) {
+        printf("Erro: 'Craque' '%s' nao encontrado!\n", nome1);
+        return;
+    }
+    if (id2 == -1) {
+        printf("Erro: 'Craque' '%s' nao encontrado!\n", nome2);
+        return;
+    }
+    
+    // Verificar se não é o mesmo 'craque'
+    if (id1 == id2) {
+        printf("Erro: Nao e possivel verificar amigos em comum do mesmo 'craque'!\n");
+        return;
+    }
+    
+    printf("\nAmigos em comum entre os craques '%s' e '%s':\n", nome1, nome2);
+    
+    int encontrouAmigos = 0;
+    No* amigo1 = rede[id1].amigos;
+
+    // Para cada amigo do primeiro 'craque'
+    while (amigo1 != NULL) {
+        No* amigo2 = rede[id2].amigos;
+
+        // Verificar se este amigo também está na lista do segundo 'craque'
+        while (amigo2 != NULL) {
+            if (amigo1->id == amigo2->id) {
+                printf("  - %s (ID: %d)\n", rede[amigo1->id].nome, amigo1->id);
+                encontrouAmigos = 1;
+                break;
+            }
+            amigo2 = amigo2->prox;
+        }
+        amigo1 = amigo1->prox;
+    }
+    
+    if (!encontrouAmigos) {
+        printf("  Nenhum amigo em comum.\n");
+    }
+}
+
 // Função para exibir estatísticas da rede
 void exibirEstatisticas() {
     if (totalUsuarios == 0) {
-        printf("Nenhum usuario para exibir estatisticas.\n");
+        printf("Nenhum craque para exibir estatisticas.\n");
         return;
     }
     
     printf("\n=== ESTATISTICAS DA REDE ===\n");
-    printf("Total de usuarios: %d\n", totalUsuarios);
+    printf("Total de craques: %d\n", totalUsuarios);
     printf("Total de amizades: %d\n", contarAmizades());
-    
-    // Encontrar usuário com mais amigos
+
+    // Encontrar craque com mais amigos
     int maxAmigos = 0;
     int usuarioPopular = 0;
     
@@ -238,7 +347,7 @@ void exibirEstatisticas() {
     }
     
     if (maxAmigos > 0) {
-        printf("Usuario mais popular: %s (%d amigos)\n", 
+        printf("Craque mais popular: %s (%d amigos)\n", 
                rede[usuarioPopular].nome, maxAmigos);
     } else {
         printf("Nenhuma amizade registrada ainda.\n");
@@ -246,30 +355,63 @@ void exibirEstatisticas() {
 }
 
 int main() {
-    printf("=== REDE SOCIAL SIMPLES ===\n\n");
+    // Inicializar o sistema
+    inicializarRede();
     
-    // Testando a adição de usuários
-    adicionarUsuario("Alice");
-    adicionarUsuario("Bob");
-    adicionarUsuario("Carlos");
-    adicionarUsuario("Diana");
-    adicionarUsuario("Eva");
+    printf("=== CADASTRANDO JOGADORES ===\n");
     
-    printf("\n=== CRIANDO AMIZADES ===\n");
+    // Cadastrando jogadores de futebol
+    adicionarUsuario("Neymar");
+    adicionarUsuario("Cristiano_Ronaldo");
+    adicionarUsuario("Vinicius_Junior");
+    adicionarUsuario("Halaand");
+    adicionarUsuario("Luva_de_Pedreiro");
+    adicionarUsuario("Messi");
+    adicionarUsuario("Gabigol");
+    adicionarUsuario("Rafinha");
+    adicionarUsuario("Camavinga");
+    adicionarUsuario("Rudiger");
+    adicionarUsuario("Marcelo");
+    adicionarUsuario("Casemiro");
+    adicionarUsuario("Pepe");
+    adicionarUsuario("Endrick");
     
-    // Criando uma rede mais interessante
-    criarAmizade("Alice", "Bob");
-    criarAmizade("Alice", "Carlos"); 
-    criarAmizade("Bob", "Diana");
-    criarAmizade("Carlos", "Diana");  // Agora Diana tem 2 amigos
-    criarAmizade("Bob", "Carlos");    // Formando um triângulo Alice-Bob-Carlos
-    // Eva fica isolada (sem amigos)
+    printf("\n=== CRIANDO AMIZADES ENTRE JOGADORES ===\n");
+    
+    // Criando amizades entre jogadores brasileiros
+    criarAmizade("Neymar", "Vinicius_Junior");
+    criarAmizade("Neymar", "Casemiro");
+    criarAmizade("Vinicius_Junior", "Endrick");
+    criarAmizade("Gabigol", "Rafinha");
+
+    // Amizades de influencer
+    criarAmizade("Luva_de_Pedreiro", "Neymar");
+    criarAmizade("Luva_de_Pedreiro", "Vinicius_Junior");
+    criarAmizade("Luva_de_Pedreiro", "Cristiano_Ronaldo");
+    criarAmizade("Luva_de_Pedreiro", "Halaand");
+    criarAmizade("Luva_de_Pedreiro", "Rafinha");
+    criarAmizade("Luva_de_Pedreiro", "Rudiger");
+    criarAmizade("Luva_de_Pedreiro", "Gabigol");
+    
+    // Amizades Real Madrid
+    criarAmizade("Cristiano_Ronaldo", "Marcelo");
+    criarAmizade("Cristiano_Ronaldo", "Casemiro");
+    criarAmizade("Vinicius_Junior", "Camavinga");
+    criarAmizade("Camavinga", "Rudiger");
+    
+    // Rivalidade que vira amizade
+    criarAmizade("Messi", "Neymar");
+    criarAmizade("Cristiano_Ronaldo", "Pepe");
+    
+    // Amizades internacionais
+    criarAmizade("Halaand", "Rudiger");
+    criarAmizade("Halaand", "Casemiro");
     
     // Testando algumas validações
     printf("\n=== TESTANDO VALIDAÇÕES ===\n");
-    criarAmizade("Alice", "Bob");     // Erro: já são amigos
-    criarAmizade("Alice", "Alice");   // Erro: mesmo usuário
-    criarAmizade("Eva", "Pedro");     // Erro: Pedro não existe
+    criarAmizade("Neymar", "Vinicius_Junior");  // Erro: já são amigos
+    criarAmizade("Messi", "Messi");             // Erro: mesmo usuário
+    criarAmizade("Endrick", "Ronaldinho");      // Erro: Ronaldinho não existe
     
     // Exibindo a rede completa
     exibirRedeSocial();
@@ -280,9 +422,21 @@ int main() {
     printf("\n=== AMIGOS INDIVIDUAIS ===\n");
     
     // Testando exibição individual
-    exibirAmigos("Alice");
-    exibirAmigos("Diana");
-    exibirAmigos("Eva");  // Sem amigos
+    exibirAmigos("Neymar");
+    exibirAmigos("Cristiano_Ronaldo");
+    exibirAmigos("Luva_de_Pedreiro");
+    exibirAmigos("Rafinha");  // Pode ter poucos amigos
+    
+    printf("\n=== AMIGOS EM COMUM ===\n");
+    
+    // Testando amigos em comum
+    amigosEmComum("Neymar", "Cristiano_Ronaldo");     // Casemiro em comum
+    amigosEmComum("Vinicius_Junior", "Neymar");       // Endrick/Casemiro em comum
+    amigosEmComum("Gabigol", "Luva_de_Pedreiro");     // Podem ter amigos em comum
+    amigosEmComum("Messi", "Halaand");                // Talvez nenhum amigo em comum
+    
+    // Encerrar o sistema adequadamente
+    encerrarRede();
     
     return 0;
 }
